@@ -3,7 +3,6 @@ import CheckIcon from '@mui/icons-material/Check'
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined'
 import { PRESET_COLORS } from '../../constants/colors'
-import { palette } from '../../constants/palette'
 import { UI_STRINGS } from '../../constants/strings'
 import { formatSubdomain } from '../../utils/formatters'
 import {
@@ -12,7 +11,12 @@ import {
   isValidHexColor,
   isValidImageFile,
 } from '../../utils/validators'
-import { generatorStyles } from './Generator.styles'
+import {
+  brandDetailsStyles,
+  getColorPreviewStyle,
+  getSwatchDotStyle,
+} from './BrandDetailsCard.styles'
+import { ColorPickerModal } from './ColorPickerModal'
 
 interface BrandDetailsCardProps {
   companyName: string
@@ -47,6 +51,7 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
   const handleFileProcess = async (file: File) => {
     const validation = isValidImageFile(file)
@@ -104,15 +109,35 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
   const subdomain = formatSubdomain(companyName)
   const bStrings = UI_STRINGS.generator.brandDetails
 
+  const effectivePreviewColor = isValidHexColor(brandColor)
+    ? brandColor
+    : PRESET_COLORS[0].hex
+
+  const dropzoneStyle: React.CSSProperties = {
+    ...brandDetailsStyles.dropzone,
+    ...(isDragOver ? brandDetailsStyles.dropzoneActive : {}),
+    ...(errors.logo ? brandDetailsStyles.dropzoneError : {}),
+  }
+
+  const companyNameInputStyle: React.CSSProperties = {
+    ...brandDetailsStyles.input,
+    ...(errors.companyName ? brandDetailsStyles.inputError : {}),
+  }
+
+  const hexInputStyle: React.CSSProperties = {
+    ...brandDetailsStyles.hexInput,
+    ...(errors.brandColor ? brandDetailsStyles.inputError : {}),
+  }
+
   return (
-    <div style={generatorStyles.card}>
-      <div style={generatorStyles.cardHeader}>
-        <h2 style={generatorStyles.cardTitle}>{bStrings.title}</h2>
-        <p style={generatorStyles.cardSubtitle}>{bStrings.subtitle}</p>
+    <div style={brandDetailsStyles.card}>
+      <div style={brandDetailsStyles.cardHeader}>
+        <h2 style={brandDetailsStyles.cardTitle}>{bStrings.title}</h2>
+        <p style={brandDetailsStyles.cardSubtitle}>{bStrings.subtitle}</p>
       </div>
 
-      <div style={generatorStyles.fieldGroup}>
-        <label style={generatorStyles.label} htmlFor="company-name">
+      <div style={brandDetailsStyles.fieldGroup}>
+        <label style={brandDetailsStyles.label} htmlFor="company-name">
           {bStrings.companyNameLabel}
         </label>
         <input
@@ -124,68 +149,59 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
             setCompanyName(e.target.value)
             if (e.target.value.trim()) clearError('companyName')
           }}
-          style={{
-            ...generatorStyles.input,
-            ...(errors.companyName ? generatorStyles.inputError : {}),
-          }}
+          style={companyNameInputStyle}
         />
-        <span style={generatorStyles.caption}>
+        <span style={brandDetailsStyles.caption}>
           {bStrings.companyNameCaption}
         </span>
         {errors.companyName && (
-          <div style={generatorStyles.errorMessage}>
+          <div style={brandDetailsStyles.errorMessage}>
             <ErrorOutlineIcon sx={{ fontSize: 14 }} />
             <span>{errors.companyName}</span>
           </div>
         )}
       </div>
 
-      <div style={generatorStyles.fieldGroup}>
-        <label style={generatorStyles.label}>{bStrings.logoLabel}</label>
+      <div style={brandDetailsStyles.fieldGroup}>
+        <label style={brandDetailsStyles.label}>{bStrings.logoLabel}</label>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/png,image/jpeg,image/svg+xml,image/webp"
-          style={{ display: 'none' }}
+          style={brandDetailsStyles.hiddenInput}
           onChange={handleFileSelect}
         />
 
         {logoUrl ? (
-          <div style={generatorStyles.uploadedCard}>
-            <div style={generatorStyles.uploadedInfo}>
+          <div style={brandDetailsStyles.uploadedCard}>
+            <div style={brandDetailsStyles.uploadedInfo}>
               <img
                 src={logoUrl}
                 alt="Uploaded company logo"
-                style={generatorStyles.uploadedThumb}
+                style={brandDetailsStyles.uploadedThumb}
               />
-              <div style={generatorStyles.uploadedMeta}>
-                <span style={generatorStyles.uploadedName}>
+              <div style={brandDetailsStyles.uploadedMeta}>
+                <span style={brandDetailsStyles.uploadedName}>
                   {logoFileName || 'company-logo.png'}
                 </span>
-                <span style={generatorStyles.uploadedSizeBadge}>
+                <span style={brandDetailsStyles.uploadedSizeBadge}>
                   <CheckIcon sx={{ fontSize: 14 }} />
                   {formatFileSize(logoFileSize || 150000)} - {UI_STRINGS.common.uploaded}
                 </span>
               </div>
             </div>
 
-            <div style={generatorStyles.uploadedActions}>
+            <div style={brandDetailsStyles.uploadedActions}>
               <button
                 type="button"
-                style={{
-                  ...generatorStyles.actionTextButton,
-                  color: palette.primary,
-                }}
+                style={brandDetailsStyles.replaceButton}
                 onClick={() => fileInputRef.current?.click()}
               >
                 {UI_STRINGS.common.replace}
               </button>
               <button
                 type="button"
-                style={{
-                  ...generatorStyles.actionTextButton,
-                  color: palette.error,
-                }}
+                style={brandDetailsStyles.removeButton}
                 onClick={handleRemoveLogo}
               >
                 {UI_STRINGS.common.remove}
@@ -194,11 +210,7 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
           </div>
         ) : (
           <div
-            style={{
-              ...generatorStyles.dropzone,
-              ...(isDragOver ? generatorStyles.dropzoneActive : {}),
-              ...(errors.logo ? generatorStyles.dropzoneError : {}),
-            }}
+            style={dropzoneStyle}
             onDragOver={(e) => {
               e.preventDefault()
               setIsDragOver(false)
@@ -207,38 +219,41 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
           >
-            <div style={generatorStyles.uploadIconCircle}>
+            <div style={brandDetailsStyles.uploadIconCircle}>
               <CloudUploadOutlinedIcon sx={{ fontSize: 24 }} />
             </div>
-            <p style={{ fontSize: '14px', color: palette.ink, fontWeight: 500 }}>
+            <p style={brandDetailsStyles.dropzonePrompt}>
               {bStrings.dropzonePrompt}{' '}
-              <span style={{ color: palette.primary, textDecoration: 'underline' }}>
+              <span style={brandDetailsStyles.dropzoneBrowse}>
                 {bStrings.browse}
               </span>
             </p>
-            <span style={{ fontSize: '12px', color: palette.textMuted, marginTop: '4px' }}>
+            <span style={brandDetailsStyles.dropzoneHint}>
               {bStrings.dropzoneHint}
             </span>
           </div>
         )}
 
         {errors.logo && (
-          <div style={generatorStyles.errorMessage}>
+          <div style={brandDetailsStyles.errorMessage}>
             <ErrorOutlineIcon sx={{ fontSize: 14 }} />
             <span>{errors.logo}</span>
           </div>
         )}
       </div>
 
-      <div style={generatorStyles.fieldGroup}>
-        <label style={generatorStyles.label}>{bStrings.brandColorLabel}</label>
-        <div style={generatorStyles.colorRow}>
+      <div style={brandDetailsStyles.fieldGroup}>
+        <label style={brandDetailsStyles.label}>{bStrings.brandColorLabel}</label>
+        <div style={brandDetailsStyles.colorRow}>
           <div
-            style={{
-              ...generatorStyles.colorPreviewBox,
-              backgroundColor: isValidHexColor(brandColor)
-                ? brandColor
-                : PRESET_COLORS[0].hex,
+            style={getColorPreviewStyle(effectivePreviewColor)}
+            title="Choose custom brand colour"
+            onClick={() => setIsColorPickerOpen(true)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)'
             }}
           />
           <input
@@ -247,13 +262,10 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
             onChange={handleColorChange}
             maxLength={7}
             placeholder={PRESET_COLORS[0].hex}
-            style={{
-              ...generatorStyles.hexInput,
-              ...(errors.brandColor ? generatorStyles.inputError : {}),
-            }}
+            style={hexInputStyle}
           />
 
-          <div style={generatorStyles.swatchList}>
+          <div style={brandDetailsStyles.swatchList}>
             {PRESET_COLORS.map((preset) => {
               const isSelected =
                 brandColor.toLowerCase() === preset.hex.toLowerCase()
@@ -266,44 +278,46 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
                     setBrandColor(preset.hex)
                     clearError('brandColor')
                   }}
-                  style={{
-                    ...generatorStyles.swatchDot,
-                    backgroundColor: preset.hex,
-                    ...(isSelected ? generatorStyles.swatchDotActive : {}),
-                  }}
+                  style={getSwatchDotStyle(preset.hex, isSelected)}
                 />
               )
             })}
           </div>
         </div>
-        <span style={generatorStyles.caption}>
+        <span style={brandDetailsStyles.caption}>
           {bStrings.brandColorCaption}
         </span>
         {errors.brandColor && (
-          <div style={generatorStyles.errorMessage}>
+          <div style={brandDetailsStyles.errorMessage}>
             <ErrorOutlineIcon sx={{ fontSize: 14 }} />
             <span>{errors.brandColor}</span>
           </div>
         )}
       </div>
 
-      <div style={{ ...generatorStyles.fieldGroup, marginBottom: 0 }}>
-        <label style={generatorStyles.label}>{bStrings.siteAddressLabel}</label>
+      <div style={brandDetailsStyles.lastFieldGroup}>
+        <label style={brandDetailsStyles.label}>{bStrings.siteAddressLabel}</label>
         <input
           type="text"
           readOnly
           value={subdomain}
-          style={{
-            ...generatorStyles.input,
-            backgroundColor: '#f9fafb',
-            color: palette.textSubtle,
-            fontFamily: 'var(--font-mono, monospace)',
-          }}
+          style={brandDetailsStyles.readonlyInput}
         />
-        <span style={generatorStyles.caption}>
+        <span style={brandDetailsStyles.caption}>
           {bStrings.siteAddressCaption}
         </span>
       </div>
+
+      {isColorPickerOpen && (
+        <ColorPickerModal
+          initialColor={brandColor}
+          onClose={() => setIsColorPickerOpen(false)}
+          onApply={(newHex) => {
+            setBrandColor(newHex)
+            clearError('brandColor')
+          }}
+        />
+      )}
     </div>
   )
 }

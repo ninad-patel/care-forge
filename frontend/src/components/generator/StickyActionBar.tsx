@@ -4,7 +4,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined'
 import { palette } from '../../constants/palette'
 import { UI_STRINGS } from '../../constants/strings'
-import { generatorStyles } from './Generator.styles'
+import { stickyBarStyles } from './StickyActionBar.styles'
 
 interface StickyActionBarProps {
   topicsCount: number
@@ -26,20 +26,14 @@ export const StickyActionBar: React.FC<StickyActionBarProps> = ({
   isGenerating,
 }) => {
   const sStrings = UI_STRINGS.generator.statusBar
+  const canGenerate = isReady && !hasErrors && !isGenerating
 
   return (
-    <footer style={generatorStyles.stickyFooter}>
-      <div style={generatorStyles.footerContainer}>
-        <div style={generatorStyles.footerStatus}>
+    <footer style={stickyBarStyles.stickyFooter}>
+      <div style={stickyBarStyles.footerContainer}>
+        <div style={stickyBarStyles.footerStatus}>
           {hasErrors ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                color: palette.error,
-              }}
-            >
+            <div style={stickyBarStyles.errorStatus}>
               <ErrorOutlineIcon sx={{ fontSize: 18 }} />
               <span>
                 {errorCount}{' '}
@@ -49,30 +43,23 @@ export const StickyActionBar: React.FC<StickyActionBarProps> = ({
               </span>
             </div>
           ) : isReady ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                color: palette.success,
-              }}
-            >
+            <div style={stickyBarStyles.readyStatus}>
               <CheckCircleIcon sx={{ fontSize: 18 }} />
               <span>
                 {sStrings.brandReady} · {topicsCount} of 10 topics
               </span>
             </div>
           ) : (
-            <div style={{ color: palette.textSubtle }}>
+            <div style={stickyBarStyles.incompleteStatus}>
               {topicsCount} {sStrings.incomplete}
             </div>
           )}
         </div>
 
-        <div style={generatorStyles.footerActions}>
+        <div style={stickyBarStyles.footerActions}>
           <button
             type="button"
-            style={generatorStyles.saveDraftButton}
+            style={stickyBarStyles.saveDraftButton}
             onClick={onSaveDraft}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#f9fafb'
@@ -88,21 +75,20 @@ export const StickyActionBar: React.FC<StickyActionBarProps> = ({
 
           <button
             type="button"
-            disabled={!isReady || hasErrors || isGenerating}
+            disabled={!canGenerate}
             onClick={onGenerate}
-            style={{
-              ...generatorStyles.generateButton,
-              ...(!isReady || hasErrors || isGenerating
-                ? generatorStyles.generateButtonDisabled
-                : {}),
-            }}
+            style={
+              canGenerate
+                ? stickyBarStyles.generateButton
+                : stickyBarStyles.generateButtonDisabled
+            }
             onMouseEnter={(e) => {
-              if (isReady && !hasErrors && !isGenerating) {
+              if (canGenerate) {
                 e.currentTarget.style.backgroundColor = palette.primaryHover
               }
             }}
             onMouseLeave={(e) => {
-              if (isReady && !hasErrors && !isGenerating) {
+              if (canGenerate) {
                 e.currentTarget.style.backgroundColor = palette.primary
               }
             }}

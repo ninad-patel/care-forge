@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   formatRelativeTime,
   formatSubdomain,
+  generateSlug,
   getCompanyInitial,
 } from './formatters'
 
@@ -31,5 +32,15 @@ describe('formatters utility', () => {
     expect(formatRelativeTime(twoDaysAgo.toISOString())).toBe('Updated 2 days ago')
 
     expect(formatRelativeTime('')).toBe('Updated recently')
+  })
+
+  it('generates clean URL slugs from topic titles', () => {
+    expect(generateSlug('Why patient education improves treatment adherence')).toBe(
+      'why-patient-education-improves-treatment-adherence'
+    )
+    expect(generateSlug('Heart health basics: Every adult should know!')).toBe(
+      'heart-health-basics-every-adult-should-know'
+    )
+    expect(generateSlug('')).toBe('')
   })
 })

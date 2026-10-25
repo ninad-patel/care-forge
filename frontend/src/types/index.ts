@@ -37,9 +37,13 @@ export interface GenerateRequest {
 }
 
 export interface GenerateResponse {
-  brand: BrandDetail
-  failed_topics: string[]
-  message: string
+  brand_id: number
+  company_name: string
+  brand_color: string
+  blogs: BlogSummary[]
+  brand?: BrandDetail
+  failed_topics?: string[]
+  message?: string
 }
 
 export interface ApiError {

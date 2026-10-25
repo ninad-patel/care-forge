@@ -432,6 +432,26 @@ export const generatorStyles: Record<string, CSSProperties> = {
     zIndex: 60,
     maxWidth: '400px',
   },
+  toastContent: {
+    flex: 1,
+  },
+  toastTitle: {
+    fontSize: '14px',
+    fontWeight: 600,
+    color: palette.ink,
+  },
+  toastMessage: {
+    fontSize: '13px',
+    color: palette.textSubtle,
+    marginTop: '2px',
+  },
+  toastCloseButton: {
+    background: 'none',
+    border: 'none',
+    color: palette.textMuted,
+    cursor: 'pointer',
+    padding: '2px',
+  },
   overlayBackdrop: {
     position: 'fixed',
     top: 0,

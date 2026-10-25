@@ -84,22 +84,14 @@ export const DashboardPage: React.FC = () => {
 
         {error && (
           <div style={dashboardStyles.errorBanner}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={dashboardStyles.errorContent}>
               <ErrorOutlineIcon sx={{ fontSize: 20 }} />
               <span>{error}</span>
             </div>
             <button
               type="button"
               onClick={loadBrands}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                color: palette.errorDeep,
-                fontWeight: 600,
-                fontSize: '13px',
-                textDecoration: 'underline',
-              }}
+              style={dashboardStyles.retryButton}
             >
               <RefreshIcon sx={{ fontSize: 16 }} />
               {UI_STRINGS.common.retry}
@@ -111,51 +103,15 @@ export const DashboardPage: React.FC = () => {
           <div style={dashboardStyles.loadingGrid}>
             {[1, 2, 3, 4].map((i) => (
               <div key={i} style={dashboardStyles.skeletonCard}>
-                <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '10px',
-                      backgroundColor: palette.hairlineSoft,
-                    }}
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div
-                      style={{
-                        width: '140px',
-                        height: '16px',
-                        borderRadius: '4px',
-                        backgroundColor: palette.hairlineSoft,
-                      }}
-                    />
-                    <div
-                      style={{
-                        width: '180px',
-                        height: '12px',
-                        borderRadius: '4px',
-                        backgroundColor: palette.hairlineSoft,
-                      }}
-                    />
+                <div style={dashboardStyles.skeletonRow}>
+                  <div style={dashboardStyles.skeletonAvatar} />
+                  <div style={dashboardStyles.skeletonCol}>
+                    <div style={dashboardStyles.skeletonTitle} />
+                    <div style={dashboardStyles.skeletonSub} />
                   </div>
                 </div>
-                <div
-                  style={{
-                    width: '100px',
-                    height: '24px',
-                    borderRadius: '100px',
-                    backgroundColor: palette.hairlineSoft,
-                    margin: '24px 0',
-                  }}
-                />
-                <div
-                  style={{
-                    width: '100%',
-                    height: '36px',
-                    borderRadius: '100px',
-                    backgroundColor: palette.hairlineSoft,
-                  }}
-                />
+                <div style={dashboardStyles.skeletonBadge} />
+                <div style={dashboardStyles.skeletonButton} />
               </div>
             ))}
           </div>

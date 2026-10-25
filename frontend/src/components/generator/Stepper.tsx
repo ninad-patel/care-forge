@@ -2,7 +2,7 @@ import React from 'react'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { palette } from '../../constants/palette'
 import { UI_STRINGS } from '../../constants/strings'
-import { generatorStyles } from './Generator.styles'
+import { stepperStyles } from './Stepper.styles'
 
 interface StepperProps {
   isBrandValid: boolean
@@ -14,89 +14,76 @@ export const Stepper: React.FC<StepperProps> = ({
   isTopicsValid,
 }) => {
   return (
-    <div style={generatorStyles.stepperRow}>
-      <div style={generatorStyles.stepItem}>
+    <div style={stepperStyles.stepperRow}>
+      {/* Step 1: Brand details */}
+      <div style={stepperStyles.stepItem}>
         {isBrandValid ? (
           <CheckCircleIcon sx={{ fontSize: 24, color: palette.success }} />
         ) : (
-          <div
-            style={{
-              ...generatorStyles.stepCircle,
-              backgroundColor: palette.primary,
-              color: palette.surface,
-            }}
-          >
+          <div style={stepperStyles.stepCircleActive}>
             1
           </div>
         )}
         <span
-          style={{
-            color: isBrandValid ? palette.success : palette.ink,
-            fontWeight: 600,
-          }}
+          style={
+            isBrandValid
+              ? stepperStyles.stepLabelCompleted
+              : stepperStyles.stepLabelActive
+          }
         >
           {UI_STRINGS.generator.steps.brandDetails}
         </span>
       </div>
 
-      <div style={generatorStyles.stepDivider} />
+      <div style={stepperStyles.stepDivider} />
 
-      <div style={generatorStyles.stepItem}>
+      {/* Step 2: Blog topics */}
+      <div style={stepperStyles.stepItem}>
         {isTopicsValid ? (
           <CheckCircleIcon sx={{ fontSize: 24, color: palette.success }} />
         ) : (
           <div
-            style={{
-              ...generatorStyles.stepCircle,
-              backgroundColor: isBrandValid
-                ? palette.primary
-                : palette.borderSubtle,
-              color: isBrandValid ? palette.surface : palette.textSubtle,
-            }}
+            style={
+              isBrandValid
+                ? stepperStyles.stepCircleActive
+                : stepperStyles.stepCircleInactive
+            }
           >
             2
           </div>
         )}
         <span
-          style={{
-            color: isTopicsValid
-              ? palette.success
+          style={
+            isTopicsValid
+              ? stepperStyles.stepLabelCompleted
               : isBrandValid
-                ? palette.ink
-                : palette.textSubtle,
-            fontWeight: 500,
-          }}
+                ? stepperStyles.stepLabelActive
+                : stepperStyles.stepLabelInactive
+          }
         >
           {UI_STRINGS.generator.steps.blogTopics}
         </span>
       </div>
 
-      <div style={generatorStyles.stepDivider} />
+      <div style={stepperStyles.stepDivider} />
 
-      <div style={generatorStyles.stepItem}>
+      {/* Step 3: Review & generate */}
+      <div style={stepperStyles.stepItem}>
         <div
-          style={{
-            ...generatorStyles.stepCircle,
-            backgroundColor:
-              isBrandValid && isTopicsValid
-                ? palette.primary
-                : palette.borderSubtle,
-            color:
-              isBrandValid && isTopicsValid
-                ? palette.surface
-                : palette.textSubtle,
-          }}
+          style={
+            isBrandValid && isTopicsValid
+              ? stepperStyles.stepCircleActive
+              : stepperStyles.stepCircleInactive
+          }
         >
           3
         </div>
         <span
-          style={{
-            color:
-              isBrandValid && isTopicsValid
-                ? palette.ink
-                : palette.textSubtle,
-            fontWeight: 500,
-          }}
+          style={
+            isBrandValid && isTopicsValid
+              ? stepperStyles.stepLabelActive
+              : stepperStyles.stepLabelInactive
+          }
         >
           {UI_STRINGS.generator.steps.reviewGenerate}
         </span>

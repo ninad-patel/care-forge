@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { appStyles } from './App.styles'
 import { Navbar } from './components/layout/Navbar'
 import { CompanyPlaceholder } from './pages/CompanyPlaceholder'
 import { DashboardPage } from './pages/DashboardPage'
@@ -8,9 +9,9 @@ import { GeneratorPage } from './pages/GeneratorPage'
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={appStyles.appWrapper}>
         <Navbar />
-        <main style={{ flex: 1 }}>
+        <main style={appStyles.mainContent}>
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/create" element={<GeneratorPage />} />

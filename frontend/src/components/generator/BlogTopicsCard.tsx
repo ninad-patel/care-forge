@@ -2,20 +2,21 @@ import React from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import { palette } from '../../constants/palette'
 import { UI_STRINGS } from '../../constants/strings'
-import { MAX_TOPICS_COUNT } from '../../utils/validators'
-import { generatorStyles } from './Generator.styles'
+import { isValidTopic } from '../../utils/validators'
+import { blogTopicsStyles } from './BlogTopicsCard.styles'
 
 interface BlogTopicsCardProps {
   topics: string[]
-  setTopics: (topics: string[]) => void
+  setTopics: React.Dispatch<React.SetStateAction<string[]>>
   errors: Record<string, string>
   clearError: (field: string) => void
   onTopicLimitReached: () => void
 }
+
+const MAX_TOPICS_COUNT = 10
 
 export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
   topics,
@@ -24,18 +25,20 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
   clearError,
   onTopicLimitReached,
 }) => {
-  const isLimitReached = topics.length >= MAX_TOPICS_COUNT
   const bStrings = UI_STRINGS.generator.blogTopics
 
   const handleTopicChange = (index: number, value: string) => {
     const updated = [...topics]
     updated[index] = value
     setTopics(updated)
-    clearError(`topic_${index}`)
+
+    if (isValidTopic(value)) {
+      clearError(`topic_${index}`)
+    }
   }
 
   const handleAddTopic = () => {
-    if (isLimitReached) {
+    if (topics.length >= MAX_TOPICS_COUNT) {
       onTopicLimitReached()
       return
     }
@@ -44,19 +47,21 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
 
   const handleRemoveTopic = (index: number) => {
     if (topics.length <= 1) return
-    const updated = topics.filter((_, i) => i !== index)
+    const updated = topics.filter((_, idx) => idx !== index)
     setTopics(updated)
     clearError(`topic_${index}`)
   }
 
+  const isLimitReached = topics.length >= MAX_TOPICS_COUNT
+
   return (
-    <div style={generatorStyles.card}>
-      <div style={generatorStyles.topicsHeaderRow}>
+    <div style={blogTopicsStyles.card}>
+      <div style={blogTopicsStyles.topicsHeaderRow}>
         <div>
-          <h2 style={generatorStyles.cardTitle}>{bStrings.title}</h2>
-          <p style={generatorStyles.cardSubtitle}>{bStrings.subtitle}</p>
+          <h2 style={blogTopicsStyles.cardTitle}>{bStrings.title}</h2>
+          <p style={blogTopicsStyles.cardSubtitle}>{bStrings.subtitle}</p>
         </div>
-        <div style={generatorStyles.topicCountBadge}>
+        <div style={blogTopicsStyles.topicCounterBadge}>
           {bStrings.counterLabel} {topics.length} / {MAX_TOPICS_COUNT}
         </div>
       </div>
@@ -65,25 +70,27 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
         const fieldKey = `topic_${index}`
         const error = errors[fieldKey]
 
+        const inputStyle: React.CSSProperties = {
+          ...blogTopicsStyles.input,
+          ...(error ? blogTopicsStyles.inputError : {}),
+        }
+
         return (
-          <div key={index} style={{ marginBottom: '16px' }}>
-            <div style={generatorStyles.topicRow}>
-              <div style={generatorStyles.topicNumberBadge}>{index + 1}</div>
+          <div key={index} style={blogTopicsStyles.topicItemWrapper}>
+            <div style={blogTopicsStyles.topicRow}>
+              <div style={blogTopicsStyles.topicNumberBadge}>{index + 1}</div>
               <input
                 type="text"
                 placeholder={bStrings.topicPlaceholder}
                 value={topic}
                 onChange={(e) => handleTopicChange(index, e.target.value)}
-                style={{
-                  ...generatorStyles.input,
-                  ...(error ? generatorStyles.inputError : {}),
-                }}
+                style={inputStyle}
               />
               {topics.length > 1 && (
                 <button
                   type="button"
                   title="Remove topic"
-                  style={generatorStyles.deleteButton}
+                  style={blogTopicsStyles.deleteButton}
                   onClick={() => handleRemoveTopic(index)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = palette.error
@@ -100,12 +107,7 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
             </div>
 
             {error && (
-              <div
-                style={{
-                  ...generatorStyles.errorMessage,
-                  marginLeft: '40px',
-                }}
-              >
+              <div style={blogTopicsStyles.errorMessage}>
                 <ErrorOutlineIcon sx={{ fontSize: 14 }} />
                 <span>{error}</span>
               </div>
@@ -115,12 +117,7 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
       })}
 
       {isLimitReached ? (
-        <div
-          style={{
-            ...generatorStyles.addTopicButton,
-            ...generatorStyles.addTopicDisabled,
-          }}
-        >
+        <div style={blogTopicsStyles.addTopicDisabled}>
           <LockOutlinedIcon sx={{ fontSize: 16 }} />
           <span>{bStrings.limitReached}</span>
         </div>
@@ -128,7 +125,7 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
         <button
           type="button"
           onClick={handleAddTopic}
-          style={generatorStyles.addTopicButton}
+          style={blogTopicsStyles.addTopicButton}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = palette.primaryTint
             e.currentTarget.style.borderColor = palette.primary
@@ -142,11 +139,6 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
           <span>{bStrings.addTopic}</span>
         </button>
       )}
-
-      <div style={generatorStyles.tipBox}>
-        <InfoOutlinedIcon sx={{ fontSize: 20, color: palette.primary, flexShrink: 0 }} />
-        <span>{bStrings.tipText}</span>
-      </div>
     </div>
   )
 }

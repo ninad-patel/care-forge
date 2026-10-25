@@ -37,3 +37,12 @@ export function formatSubdomain(slugOrName: string): string {
     .replace(/^-|-$/g, '')
   return `${clean || 'company'}.careforge.app`
 }
+
+export function generateSlug(text: string): string {
+  if (!text) return ''
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
