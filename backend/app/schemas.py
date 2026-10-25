@@ -4,13 +4,18 @@ Implements strict validation for company data, brand colors, and topic limits
 according to backend-async-fastapi standards.
 """
 
-import re
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-# Hex color regex: matches 3-hex or 6-hex with mandatory leading #
-HEX_COLOR_REGEX = re.compile(r"^#(?:[0-9a-fA-F]{3}){1,2}$")
+from app.constants import (
+    HEX_COLOR_REGEX,
+    MAX_COMPANY_NAME_LENGTH,
+    MAX_TOPICS_COUNT,
+    MIN_COMPANY_NAME_LENGTH,
+    MIN_LOGO_URL_LENGTH,
+    MIN_TOPICS_COUNT,
+)
 
 
 class GenerateRequest(BaseModel):
@@ -18,14 +23,14 @@ class GenerateRequest(BaseModel):
 
     company_name: str = Field(
         ...,
-        min_length=1,
-        max_length=150,
+        min_length=MIN_COMPANY_NAME_LENGTH,
+        max_length=MAX_COMPANY_NAME_LENGTH,
         description="The name of the company or healthcare provider",
         examples=["Apollo Health"],
     )
     logo_url: str = Field(
         ...,
-        min_length=5,
+        min_length=MIN_LOGO_URL_LENGTH,
         description="Base64 Data URL or public image URL representing company logo",
         examples=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."],
     )
@@ -36,8 +41,8 @@ class GenerateRequest(BaseModel):
     )
     topics: list[str] = Field(
         ...,
-        min_length=1,
-        max_length=10,
+        min_length=MIN_TOPICS_COUNT,
+        max_length=MAX_TOPICS_COUNT,
         description="Array of 1 to 10 distinct blog post topics",
         examples=[["Cardiology Innovations", "Managing Diabetes With Nutrition"]],
     )

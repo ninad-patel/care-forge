@@ -14,7 +14,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.config import get_settings
+from app.constants import (
+    API_PREFIX,
+    ROUTE_HEALTH,
+    TABLE_BLOG,
+    TABLE_BRAND,
+    TAG_BLOGS,
+    TAG_BRANDS,
+    TAG_GENERATION,
+)
 from app.database import check_db_connection, init_db
+from app.routers.blogs import router as blogs_router
+from app.routers.brands import router as brands_router
+from app.routers.generate import router as generate_router
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -49,6 +61,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register API Routers under /api
+app.include_router(generate_router, prefix=API_PREFIX, tags=[TAG_GENERATION])
+app.include_router(brands_router, prefix=API_PREFIX, tags=[TAG_BRANDS])
+app.include_router(blogs_router, prefix=API_PREFIX, tags=[TAG_BLOGS])
+
 
 @app.get("/")
 async def root() -> dict[str, str]:
@@ -60,12 +77,12 @@ async def root() -> dict[str, str]:
     }
 
 
-@app.get("/api/health")
+@app.get(f"{API_PREFIX}{ROUTE_HEALTH}")
 async def health_check() -> dict[str, Any]:
     """API health and database connectivity status endpoint."""
     db_connected = check_db_connection()
     return {
         "status": "healthy" if db_connected else "degraded",
         "database": "connected" if db_connected else "disconnected",
-        "tables": ["tbl_brand", "tbl_blog"] if db_connected else [],
+        "tables": [TABLE_BRAND, TABLE_BLOG] if db_connected else [],
     }

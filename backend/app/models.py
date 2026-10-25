@@ -9,6 +9,8 @@ from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
+from app.constants import TABLE_BLOG, TABLE_BRAND
+
 
 class Base(DeclarativeBase):
     """Base class for all SQLAlchemy declarative models."""
@@ -20,7 +22,7 @@ class Brand(Base):
     Table: tbl_brand
     """
 
-    __tablename__ = "tbl_brand"
+    __tablename__ = TABLE_BRAND
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     company_name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
@@ -51,12 +53,12 @@ class Blog(Base):
     Table: tbl_blog
     """
 
-    __tablename__ = "tbl_blog"
+    __tablename__ = TABLE_BLOG
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     brand_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("tbl_brand.id", ondelete="CASCADE"),
+        ForeignKey(f"{TABLE_BRAND}.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
