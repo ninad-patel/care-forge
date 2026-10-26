@@ -3,10 +3,12 @@ import { palette } from '../../constants/palette'
 
 export const stickyBarStyles: Record<string, CSSProperties> = {
   stickyFooter: {
-    position: 'sticky',
+    position: 'fixed',
     bottom: 0,
     left: 0,
     right: 0,
+    width: '100%',
+    boxSizing: 'border-box',
     backgroundColor: palette.surface,
     borderTop: `1px solid ${palette.hairline}`,
     padding: '16px 24px',
@@ -14,7 +16,8 @@ export const stickyBarStyles: Record<string, CSSProperties> = {
     boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.03)',
   },
   footerContainer: {
-    maxWidth: '720px',
+    maxWidth: '760px',
+    width: '100%',
     margin: '0 auto',
     display: 'flex',
     alignItems: 'center',

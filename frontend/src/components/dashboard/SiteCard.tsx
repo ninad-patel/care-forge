@@ -19,10 +19,11 @@ export const SiteCard: React.FC<SiteCardProps> = ({ brand }) => {
   const [imgError, setImgError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
-  const initial = getCompanyInitial(brand.name)
-  const subdomain = formatSubdomain(brand.slug || brand.name)
+  const displayName = brand.company_name || brand.name || 'CareForge'
+  const initial = getCompanyInitial(displayName)
+  const subdomain = formatSubdomain(brand.slug || displayName)
   const relativeTime = formatRelativeTime(brand.created_at)
-  const pagesCount = brand.blogs_count ?? 10
+  const pagesCount = brand.blog_count ?? brand.blogs_count ?? 10
 
   const cardStyle: React.CSSProperties = {
     ...dashboardStyles.card,
@@ -37,7 +38,10 @@ export const SiteCard: React.FC<SiteCardProps> = ({ brand }) => {
 
   const avatarStyle: React.CSSProperties = {
     ...dashboardStyles.avatar,
-    backgroundColor: brand.brand_color || '#0e7c86',
+    backgroundColor:
+      brand.logo_url && !imgError
+        ? 'transparent'
+        : brand.brand_color || '#0e7c86',
   }
 
   return (
@@ -53,7 +57,7 @@ export const SiteCard: React.FC<SiteCardProps> = ({ brand }) => {
               {brand.logo_url && !imgError ? (
                 <img
                   src={brand.logo_url}
-                  alt={`${brand.name} logo`}
+                  alt={`${displayName} logo`}
                   style={dashboardStyles.avatarImg}
                   onError={() => setImgError(true)}
                 />
@@ -62,7 +66,7 @@ export const SiteCard: React.FC<SiteCardProps> = ({ brand }) => {
               )}
             </div>
             <div style={dashboardStyles.nameAndSlug}>
-              <div style={dashboardStyles.brandName}>{brand.name}</div>
+              <div style={dashboardStyles.brandName}>{displayName}</div>
               <div style={dashboardStyles.subdomain}>{subdomain}</div>
             </div>
           </div>

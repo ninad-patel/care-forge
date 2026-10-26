@@ -58,7 +58,10 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
     <div style={blogTopicsStyles.card}>
       <div style={blogTopicsStyles.topicsHeaderRow}>
         <div>
-          <h2 style={blogTopicsStyles.cardTitle}>{bStrings.title}</h2>
+          <h2 style={blogTopicsStyles.cardTitle}>
+            {bStrings.title}
+            <span style={blogTopicsStyles.requiredAsterisk}>*</span>
+          </h2>
           <p style={blogTopicsStyles.cardSubtitle}>{bStrings.subtitle}</p>
         </div>
         <div style={blogTopicsStyles.topicCounterBadge}>
@@ -78,10 +81,13 @@ export const BlogTopicsCard: React.FC<BlogTopicsCardProps> = ({
         return (
           <div key={index} style={blogTopicsStyles.topicItemWrapper}>
             <div style={blogTopicsStyles.topicRow}>
-              <div style={blogTopicsStyles.topicNumberBadge}>{index + 1}</div>
+              <div style={blogTopicsStyles.topicPrefix}>
+                <div style={blogTopicsStyles.topicNumberBadge}>{index + 1}</div>
+                <span style={blogTopicsStyles.topicRowAsterisk}>*</span>
+              </div>
               <input
                 type="text"
-                placeholder={bStrings.topicPlaceholder}
+                placeholder={`${bStrings.topicPlaceholder} *`}
                 value={topic}
                 onChange={(e) => handleTopicChange(index, e.target.value)}
                 style={inputStyle}

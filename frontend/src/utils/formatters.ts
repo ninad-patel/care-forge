@@ -46,3 +46,13 @@ export function generateSlug(text: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
 }
+
+export function calculateWordCount(markdown: string): number {
+  if (!markdown || !markdown.trim()) return 0
+  return markdown.trim().split(/\s+/).filter(Boolean).length
+}
+
+export function calculateReadingTime(wordCount: number): number {
+  if (wordCount <= 0) return 1
+  return Math.max(1, Math.ceil(wordCount / 200))
+}

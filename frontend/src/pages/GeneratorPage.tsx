@@ -17,9 +17,9 @@ import { GeneratorSkeleton } from '../components/generator/GeneratorSkeleton'
 import { ReviewGenerateModal } from '../components/generator/ReviewGenerateModal'
 import { Stepper } from '../components/generator/Stepper'
 import { StickyActionBar } from '../components/generator/StickyActionBar'
-import { DEFAULT_BRAND_COLOR, PRESET_COLORS } from '../constants/colors'
+import { DEFAULT_BRAND_COLOR } from '../constants/colors'
 import { palette } from '../constants/palette'
-import { DEFAULT_SAMPLE_TOPICS, UI_STRINGS } from '../constants/strings'
+import { UI_STRINGS } from '../constants/strings'
 import { api } from '../services/api'
 import { formatSubdomain, generateSlug } from '../utils/formatters'
 import { isValidHexColor, isValidTopic } from '../utils/validators'
@@ -81,7 +81,7 @@ export const GeneratorPage: React.FC = () => {
   const [topics, setTopics] = useState<string[]>(
     initialDraft?.topics && initialDraft.topics.length > 0
       ? initialDraft.topics
-      : DEFAULT_SAMPLE_TOPICS
+      : ['']
   )
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -105,6 +105,12 @@ export const GeneratorPage: React.FC = () => {
     return () => clearTimeout(timer)
   }, [])
 
+  useEffect(() => {
+    if (isGenerating || generationResult) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    }
+  }, [isGenerating, generationResult])
+
   const clearError = (field: string) => {
     setErrors((prev) => {
       const next = { ...prev }
@@ -122,6 +128,10 @@ export const GeneratorPage: React.FC = () => {
 
     if (!companyName.trim()) {
       newErrors.companyName = UI_STRINGS.validation.companyNameRequired
+    }
+
+    if (!logoUrl.trim()) {
+      newErrors.logo = UI_STRINGS.validation.logoRequired
     }
 
     if (!isValidHexColor(brandColor)) {
@@ -194,6 +204,7 @@ export const GeneratorPage: React.FC = () => {
   const handleExecuteGeneration = async () => {
     setIsReviewModalOpen(false)
     setIsGenerating(true)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     isCancelledRef.current = false
     setToast({
       type: 'info',
@@ -397,20 +408,9 @@ export const GeneratorPage: React.FC = () => {
     setGenerationResult(null)
   }
 
-  const handleCreateAnother = () => {
-    localStorage.removeItem(DRAFT_STORAGE_KEY)
-    setCompanyName('')
-    setLogoUrl('')
-    setLogoFileName('')
-    setLogoFileSize(0)
-    setBrandColor(PRESET_COLORS[0].hex)
-    setTopics(DEFAULT_SAMPLE_TOPICS)
-    setErrors({})
-    setGenerationResult(null)
-  }
-
   const isBrandValid =
     Boolean(companyName.trim()) &&
+    Boolean(logoUrl.trim()) &&
     isValidHexColor(brandColor) &&
     !errors.companyName &&
     !errors.brandColor &&
@@ -503,7 +503,6 @@ export const GeneratorPage: React.FC = () => {
           isRetrying={isRetrying}
           onRetryFailed={handleRetryFailed}
           onEditTopics={handleEditTopics}
-          onCreateAnother={handleCreateAnother}
           onShowToast={(newToast) => setToast(newToast)}
         />
       </div>

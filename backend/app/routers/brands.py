@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from app.constants import ROUTE_BRANDS
 from app.database import get_db
 from app.models import Blog, Brand
-from app.schemas import BlogSummary, BrandDetail, BrandSummary
+from app.schemas import BlogDetail, BlogSummary, BrandDetail, BrandSummary
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +92,39 @@ async def get_brand(
         brand_color=brand.brand_color,
         created_at=brand.created_at,
         blogs=[BlogSummary.model_validate(b) for b in blogs],
+    )
+
+
+@router.get(
+    "/{brand_id}/blogs/{slug}",
+    response_model=BlogDetail,
+    summary="Retrieve an individual blog post by brand ID and topic slug",
+)
+async def get_brand_blog_by_slug(
+    brand_id: int,
+    slug: str,
+    db: Annotated[Session, Depends(get_db)],
+) -> BlogDetail:
+    """Retrieve full blog post markdown article and brand styling tokens using brand ID and slug."""
+    blog = db.query(Blog).filter(Blog.brand_id == brand_id, Blog.slug == slug).first()
+    if not blog:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Blog article with slug '{slug}' not found for brand ID {brand_id}.",
+        )
+
+    brand = blog.brand
+    return BlogDetail(
+        id=blog.id,
+        brand_id=blog.brand_id,
+        topic=blog.topic,
+        slug=blog.slug,
+        content_markdown=blog.content_markdown,
+        word_count=blog.word_count,
+        created_at=blog.created_at,
+        company_name=brand.company_name if brand else "CareForge",
+        logo_url=brand.logo_url if brand else "",
+        brand_color=brand.brand_color if brand else "#0066CC",
     )
 
 

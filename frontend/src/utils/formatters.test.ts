@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
+  calculateReadingTime,
+  calculateWordCount,
   formatRelativeTime,
   formatSubdomain,
   generateSlug,
@@ -42,5 +44,18 @@ describe('formatters utility', () => {
       'heart-health-basics-every-adult-should-know'
     )
     expect(generateSlug('')).toBe('')
+  })
+
+  it('calculates word count accurately from markdown text', () => {
+    expect(calculateWordCount('Hello world from CareForge')).toBe(4)
+    expect(calculateWordCount('')).toBe(0)
+    expect(calculateWordCount('   Multiple    spaces   between words   ')).toBe(4)
+  })
+
+  it('calculates estimated reading time at 200 words per minute', () => {
+    expect(calculateReadingTime(1000)).toBe(5)
+    expect(calculateReadingTime(980)).toBe(5)
+    expect(calculateReadingTime(150)).toBe(1)
+    expect(calculateReadingTime(0)).toBe(1)
   })
 })

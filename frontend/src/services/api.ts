@@ -48,13 +48,21 @@ export const api = {
     return handleResponse<BrandSummary[]>(res)
   },
 
-  async getBrandById(id: string): Promise<BrandDetail> {
+  async getBrandById(id: string | number): Promise<BrandDetail> {
     const res = await fetch(`${BASE_URL}/api/brands/${id}`)
     return handleResponse<BrandDetail>(res)
   },
 
-  async getBlogById(id: string): Promise<BlogDetail> {
+  async getBlogById(id: string | number): Promise<BlogDetail> {
     const res = await fetch(`${BASE_URL}/api/blogs/${id}`)
+    return handleResponse<BlogDetail>(res)
+  },
+
+  async getBlogBySlug(
+    brandId: string | number,
+    slug: string
+  ): Promise<BlogDetail> {
+    const res = await fetch(`${BASE_URL}/api/brands/${brandId}/blogs/${slug}`)
     return handleResponse<BlogDetail>(res)
   },
 

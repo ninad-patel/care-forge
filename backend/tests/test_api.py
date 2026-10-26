@@ -216,6 +216,47 @@ def test_get_blog_detail_with_brand_styling(client: TestClient) -> None:
     assert blog_data["logo_url"].startswith("data:image/")
 
 
+def test_get_brand_blog_by_slug(client: TestClient) -> None:
+    """Verify that GET /api/brands/{brand_id}/blogs/{slug} retrieves blog and brand tokens."""
+    payload = {
+        "company_name": "Aarogya Health",
+        "logo_url": "data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=",
+        "brand_color": "#0D9488",
+        "topics": ["Preparing for your first IVF consultation"],
+    }
+    with patch(
+        "app.routers.generate.llm_service.generate_blogs_parallel",
+        new_callable=AsyncMock,
+        return_value=[
+            {
+                "topic": "Preparing for your first IVF consultation",
+                "slug": "preparing-for-your-first-ivf-consultation",
+                "content_markdown": "# Preparing for IVF\n\nFull consultation guide.",
+                "word_count": 995,
+            }
+        ],
+    ):
+        post_res = client.post("/api/generate", json=payload)
+        brand_id = post_res.json()["brand_id"]
+
+    # 1. Fetch by valid slug
+    slug_res = client.get(
+        f"/api/brands/{brand_id}/blogs/preparing-for-your-first-ivf-consultation"
+    )
+    assert slug_res.status_code == 200
+    slug_data = slug_res.json()
+    assert slug_data["topic"] == "Preparing for your first IVF consultation"
+    assert slug_data["slug"] == "preparing-for-your-first-ivf-consultation"
+    assert slug_data["company_name"] == "Aarogya Health"
+    assert slug_data["brand_color"] == "#0D9488"
+    assert slug_data["word_count"] == 995
+    assert "Full consultation guide." in slug_data["content_markdown"]
+
+    # 2. Fetch by invalid slug returns 404
+    not_found_res = client.get(f"/api/brands/{brand_id}/blogs/unknown-slug")
+    assert not_found_res.status_code == 404
+
+
 def test_delete_brand_cascades(client: TestClient) -> None:
     """Verify that DELETE /api/brands/{id} removes the brand and its blogs."""
     payload = {

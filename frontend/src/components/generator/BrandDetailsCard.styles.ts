@@ -40,6 +40,11 @@ export const brandDetailsStyles: Record<string, CSSProperties> = {
     color: palette.ink,
     marginBottom: '8px',
   },
+  requiredAsterisk: {
+    color: palette.error,
+    marginLeft: '3px',
+    fontWeight: 600,
+  },
   input: {
     width: '100%',
     padding: '12px 14px',

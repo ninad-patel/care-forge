@@ -139,6 +139,7 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
       <div style={brandDetailsStyles.fieldGroup}>
         <label style={brandDetailsStyles.label} htmlFor="company-name">
           {bStrings.companyNameLabel}
+          <span style={brandDetailsStyles.requiredAsterisk}>*</span>
         </label>
         <input
           id="company-name"
@@ -163,7 +164,10 @@ export const BrandDetailsCard: React.FC<BrandDetailsCardProps> = ({
       </div>
 
       <div style={brandDetailsStyles.fieldGroup}>
-        <label style={brandDetailsStyles.label}>{bStrings.logoLabel}</label>
+        <label style={brandDetailsStyles.label}>
+          {bStrings.logoLabel}
+          <span style={brandDetailsStyles.requiredAsterisk}>*</span>
+        </label>
         <input
           ref={fileInputRef}
           type="file"

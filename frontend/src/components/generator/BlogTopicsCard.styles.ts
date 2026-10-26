@@ -22,6 +22,11 @@ export const blogTopicsStyles: Record<string, CSSProperties> = {
     letterSpacing: '-0.4px',
     marginBottom: '6px',
   },
+  requiredAsterisk: {
+    color: palette.error,
+    marginLeft: '3px',
+    fontWeight: 600,
+  },
   cardSubtitle: {
     fontSize: '14px',
     color: palette.textSubtle,
@@ -44,6 +49,17 @@ export const blogTopicsStyles: Record<string, CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
+  },
+  topicPrefix: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    flexShrink: 0,
+  },
+  topicRowAsterisk: {
+    color: palette.error,
+    fontSize: '14px',
+    fontWeight: 700,
   },
   topicNumberBadge: {
     width: '28px',

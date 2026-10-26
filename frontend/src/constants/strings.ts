@@ -1,19 +1,5 @@
 export const APP_NAME = 'CareForge'
 
-export const DEFAULT_SAMPLE_TOPICS: string[] = [
-  'Why patient education improves treatment adherence',
-  '5 ways AI is personalising healthcare communication',
-  'Managing diabetes: a daily habits guide',
-]
-
-export const GENERATION_STEPS: string[] = [
-  'Initializing campaign and brand theme...',
-  'Dispatching 10 parallel Gemini generation tasks...',
-  'Crafting ~1,000-word medical and wellness content...',
-  'Formatting structured Markdown and clinical headers...',
-  'Publishing 10 hosted pages to database...',
-]
-
 export const UI_STRINGS = {
   common: {
     backToSites: 'My sites',
@@ -144,7 +130,6 @@ export const UI_STRINGS = {
       liveBadge: 'Live',
       failedBadge: 'Failed',
       failedReason: "Couldn't generate — temporary error",
-      createAnotherSite: '+ Create another site for a new brand or use case',
       copySuccessToastTitle: 'Link copied',
       copySuccessToastSuffix: 'is on your clipboard.',
       incompleteToastTitle: 'Generation incomplete',
@@ -175,8 +160,36 @@ export const UI_STRINGS = {
         'Concurrently generating 10 articles (~15–20 seconds). Please do not close this window.',
     },
   },
+  blogHub: {
+    blogSuffix: 'Blog',
+    defaultSubtitle:
+      'Practical, trustworthy guidance on patient education, chronic care and digital health.',
+    featuredPrefix: 'Featured ·',
+    readArticle: 'Read article',
+    minReadSuffix: 'min read',
+    footerTagline:
+      'Trusted, patient-first healthcare information for every stage of care.',
+    poweredBy: 'Powered by BlogForge',
+    loading: 'Loading blog hub...',
+    notFoundTitle: 'Brand hub not found',
+    notFoundSubtitle: 'The requested brand portal could not be found.',
+    backToDashboard: 'Back to Dashboard',
+  },
+  blogPost: {
+    blogBreadcrumb: 'Blog',
+    editorialTeamSuffix: 'Editorial Team',
+    minReadSuffix: 'min read',
+    wordsSuffix: 'words',
+    keyTakeawaysTitle: 'Key takeaways',
+    moreFromBlog: 'More from the blog',
+    loading: 'Loading article...',
+    notFoundTitle: 'Blog post not found',
+    notFoundSubtitle: 'The requested blog post could not be found.',
+    backToHub: 'Back to Blog Hub',
+  },
   validation: {
     companyNameRequired: 'Company name is required.',
+    logoRequired: 'Logo image is required.',
     brandColorInvalid: 'Enter a valid 6-digit hex code, e.g. #0E7C86.',
     topicTooShort: 'is too short — use at least 5 characters.',
     atLeastOneTopic: 'Please provide at least 1 topic.',

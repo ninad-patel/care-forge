@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   calculateContrastRatio,
+  getContrastTextColor,
   getWcagEvaluation,
   hexToHsv,
+  hexToRgba,
   hsvToHex,
 } from './contrast'
 
@@ -35,5 +37,15 @@ describe('contrast utility', () => {
     const hsv = hexToHsv(hex)
     const backToHex = hsvToHex(hsv.h, hsv.s, hsv.v)
     expect(backToHex.toUpperCase()).toBe(hex.toUpperCase())
+  })
+
+  it('determines appropriate contrast text color for dark and light backgrounds', () => {
+    expect(getContrastTextColor('#0E7C86')).toBe('#ffffff')
+    expect(getContrastTextColor('#000000')).toBe('#ffffff')
+    expect(getContrastTextColor('#FFFF00')).toBe('#111827')
+  })
+
+  it('generates rgba string from hex with given alpha', () => {
+    expect(hexToRgba('#000000', 0.1)).toBe('rgba(0, 0, 0, 0.1)')
   })
 })

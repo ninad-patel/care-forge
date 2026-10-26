@@ -151,3 +151,14 @@ export function hsvToHex(h: number, s: number, v: number): string {
   const toHex = (n: number) => n.toString(16).padStart(2, '0').toUpperCase()
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
+
+export function getContrastTextColor(bgHex: string): string {
+  const ratio = calculateContrastRatio(bgHex, '#ffffff')
+  return ratio >= 3.0 ? '#ffffff' : '#111827'
+}
+
+export function hexToRgba(hex: string, alpha = 0.08): string {
+  const rgb = hexToRgb(hex)
+  if (!rgb) return `rgba(14, 124, 134, ${alpha})`
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
+}

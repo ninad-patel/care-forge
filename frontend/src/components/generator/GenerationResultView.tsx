@@ -1,6 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import AddIcon from '@mui/icons-material/Add'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
@@ -27,7 +25,6 @@ interface GenerationResultViewProps {
   isRetrying?: boolean
   onRetryFailed: (failedTopics: string[]) => void
   onEditTopics: () => void
-  onCreateAnother: () => void
   onShowToast: (toast: {
     type: 'success' | 'warning' | 'info'
     title: string
@@ -37,13 +34,11 @@ interface GenerationResultViewProps {
 
 export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
   brandId,
-  companyName,
   subdomain,
   items,
   isRetrying = false,
   onRetryFailed,
   onEditTopics,
-  onCreateAnother,
   onShowToast,
 }) => {
   const strings = UI_STRINGS.generator.resultScreen
@@ -51,6 +46,9 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
   const liveItems = items.filter((item) => item.status === 'live')
   const failedItems = items.filter((item) => item.status === 'failed')
   const isFullSuccess = failedItems.length === 0
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const hubUrl = `${origin}/company/${brandId}`
 
   const handleCopyLink = async (url: string) => {
     try {
@@ -67,23 +65,6 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
         message: url,
       })
     }
-  }
-
-  const handleShareSite = async () => {
-    const fullUrl = `https://${subdomain}`
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: companyName,
-          text: `${companyName} blog hub`,
-          url: fullUrl,
-        })
-        return
-      } catch {
-        // Fallback to clipboard if user cancels or share is unavailable
-      }
-    }
-    handleCopyLink(fullUrl)
   }
 
   const handleRetryClick = () => {
@@ -112,7 +93,7 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
                 <button
                   type="button"
                   title="Copy link"
-                  onClick={() => handleCopyLink(subdomain)}
+                  onClick={() => handleCopyLink(hubUrl)}
                   style={resultViewStyles.subdomainCopyButton}
                 >
                   <ContentCopyOutlinedIcon sx={{ fontSize: 16 }} />
@@ -122,17 +103,14 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
           </div>
 
           <div style={resultViewStyles.bannerActions}>
-            <Link to={`/company/${brandId}`} style={resultViewStyles.primaryPillButton}>
-              {strings.viewBlogHub}
-            </Link>
-
-            <button
-              type="button"
-              onClick={handleShareSite}
-              style={resultViewStyles.secondaryPillButton}
+            <a
+              href={`/company/${brandId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={resultViewStyles.primaryPillButton}
             >
-              {strings.shareSite}
-            </button>
+              {strings.viewBlogHub}
+            </a>
           </div>
         </div>
       ) : (
@@ -167,9 +145,14 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
                 : `${strings.retryButtonPrefix} ${failedItems.length} ${strings.retryButtonSuffix}`}
             </button>
 
-            <Link to={`/company/${brandId}`} style={resultViewStyles.secondaryPillButton}>
+            <a
+              href={`/company/${brandId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={resultViewStyles.secondaryPillButton}
+            >
               {strings.viewBlogHub}
-            </Link>
+            </a>
           </div>
         </div>
       )}
@@ -203,6 +186,7 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
         {items.map((item, index) => {
           const isLive = item.status === 'live'
           const pageUrl = `${subdomain}/${item.slug}`
+          const realArticleUrl = `${origin}/company/${brandId}/${item.slug}`
 
           return (
             <div key={index} style={resultViewStyles.articleCard}>
@@ -235,7 +219,7 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
                     <button
                       type="button"
                       title="Copy link"
-                      onClick={() => handleCopyLink(pageUrl)}
+                      onClick={() => handleCopyLink(realArticleUrl)}
                       style={resultViewStyles.iconButton}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.color = palette.ink
@@ -249,8 +233,10 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
                       <ContentCopyOutlinedIcon sx={{ fontSize: 18 }} />
                     </button>
 
-                    <Link
-                      to={`/company/${brandId}`}
+                    <a
+                      href={`/company/${brandId}/${item.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       title="Open page"
                       style={resultViewStyles.iconButton}
                       onMouseEnter={(e) => {
@@ -263,7 +249,7 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
                       }}
                     >
                       <OpenInNewIcon sx={{ fontSize: 18 }} />
-                    </Link>
+                    </a>
                   </>
                 ) : (
                   <div style={resultViewStyles.failedBadge}>
@@ -276,24 +262,6 @@ export const GenerationResultView: React.FC<GenerationResultViewProps> = ({
           )
         })}
       </div>
-
-      {/* Bottom Button: Create another site */}
-      <button
-        type="button"
-        onClick={onCreateAnother}
-        style={resultViewStyles.createAnotherCard}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = palette.primary
-          e.currentTarget.style.backgroundColor = palette.primaryTint
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = palette.borderInput
-          e.currentTarget.style.backgroundColor = 'transparent'
-        }}
-      >
-        <AddIcon sx={{ fontSize: 18 }} />
-        <span>{strings.createAnotherSite}</span>
-      </button>
     </div>
   )
 }
